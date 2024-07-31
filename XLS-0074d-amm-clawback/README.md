@@ -62,5 +62,65 @@ Suppose an issuer has enabled clawback by setting the `lsfAllowTrustLineClawback
 This change allows for the creation of AMM pools with clawback-enabled issuers while introducing a new transaction type (`AMMClawback`) for issuers to clawback assets from AMM accounts.
 
 
-#### 2.2.2. New transaction to claw back from AMM pools
+#### 2.2.2. New transaction to claw back from AMM pools  
+This proposal introduces a new transaction type `AMMClawback` to allow asset issuers to claw back their assets from the AMM pool.  
 
+Issuers can only claw back issued tokens in the AMM pool only if the `lsfAllowTrustLineClawback` flag is enabled. Attempting to do so without this flag set will result in an error code `tecNO_PERMISSION`.  
+
+By designating the AMM account and holder account, this transaction will:  
+- Claw back all LPTokens held by the specified holder account that are associated with the issuer from the specified AMM account.
+- Initiate a two-asset withdrawal from the AMM account, resulting in:
+  - The issuer's asset being returned to the issuer's account.
+  - The non-issuer asset being transferred back to the holder's account
+
+##### 2.2.2.1. Fields for AMMClawback transaction  
+
+| Field Name          | Required?        |  JSON Type    | Internal Type     |
+|---------------------|:----------------:|:-------------:|:-----------------:|
+| `TransactionType`   |:heavy_check_mark:|`string`       |   `UINT16`        |  
+
+`TransactionType` specifies the new transaction type `AMMClawback`. The integer value is 31. The recommended name is `ttAMMClawback`.
+
+---
+
+| Field Name          | Required?        |  JSON Type    | Internal Type     |
+|---------------------|:----------------:|:-------------:|:-----------------:|
+| `Account`           |:heavy_check_mark:|`string`       |   `ACCOUNT ID`    |  
+
+`Account` designates the issuer of the asset being clawed back, and must match the account submitting the transaction.
+
+---  
+| Field Name          | Required?        |  JSON Type    | Internal Type     |
+|---------------------|:----------------:|:-------------:|:-----------------:|
+| `Holder`            |:heavy_check_mark:|`string`       |   `ACCOUNT ID`    |  
+
+`Holder` specifies the holder account of the LP Token to be clawed back.
+
+---
+
+| Field Name          | Required?        |  JSON Type          | Internal Type     |
+|---------------------|:----------------:|:-------------------:|:-----------------:|
+| `AMMAccount`        |:heavy_check_mark:|`string`             |   `ACCOUNT ID`    |  
+
+`AMMAccount` specifies the AMM account from which the transaction will withdraw assets after clawing back `Holder`'s LPtokens.
+
+---  
+
+
+##### 2.2.2.2. AMMClawback transaction example
+
+```
+{
+  "TransactionType": "AMMClawback",
+  "Account": "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL",
+  "Holder": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+  "AMMAccount": "rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR",
+  "Flags": 1,
+  "Fee": 10
+}
+```
+
+- Upon execution, this transaction enables the issuer `rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL` to claw back up all LPTokens from holder `rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B` associated with AMM account `rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR`.
+- The transaction will result in the withdrawal of two corresponding assets from the AMM account:  
+  - The asset issued by the `Account` will be returned to the issuer.
+  - The other asset will be transferred back to the holder's wallet.
