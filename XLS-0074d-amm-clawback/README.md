@@ -30,9 +30,38 @@ Currently, accounts that have enabled clawback cannot create AMM pools. This pro
 ## 2. Specification
 ### 2.1. AMM and Frozen Asset 
 #### 2.1.1. Prohibiting depositing new tokens
+
+This proposal introduces changes to the behavior of the `AMMDeposit` transaction when tokens in trustlines interact with Automated Market Maker (AMM) pools. 
+
+Assume we have created an Automated Market Maker (AMM) pool with two assets: A and B. Currently, asset A is frozen by individual freeze. The following table outlines whether specific scenarios are allowed or prohibited for the current behavior and proposed behavior:
+
+| Scenario                | Current Behavior  | Proposed Behavior     |
+|-------------------------|-------------------|-----------------------|
+| Double-Asset Deposit    | Prohibited        | Prohibited            |
+| Only Deposit A (frozen) | Prohibited        | Prohibited            |
+| Only Deposit B          | Allowed           | Prohibited            |  
+
+As illustrated in the table above, the primary change is that when one asset in the AMM pool is frozen, depositing the other asset is no longer allowed. This means that deposits are prohibited for the non-frozen asset when its paired asset is frozen.
+
 #### 2.1.2. Prohibiting transfering LPTokens that are frozen
 ### 2.2. AMM and Clawback
 #### 2.2.1. Allow creation of AMM pool when tokens have enabled clawback
+Currently, when clawback is enabled for the issuer account by setting `lsfAllowTrustLineClawback` flag, `AMMCreate` is prohibited against this issuer. After the AMMClawback amendment, `AMMCreate` is allowed for clawback-enabled issuer. But the issuer can not clawback from the AMM account using `Clawback` transaction. `AMMClawback` transaction is needed for the issuer to clawback from an AMM account.  
+
+##### Example: Illustrating the AMMClawback Amendment
+
+Suppose an issuer has enabled clawback by setting the `lsfAllowTrustLineClawback` flag through an `AccountSet` transaction. Additionally, two trustlines have been established between the holder and the issuer for currencies A and B 
+
+- **Pre-Amendment Behavior:**  
+    - If the holder attempts to create an AMM pool (`AMMCreate`) using the pair of trustline assets A and B associated with the issuer, the transaction will fail with a `tecNO_PERMISSION` error.
+
+- **Post-Amendment Behavior:**  
+    - After the AMMClawback amendment, if the holder submits an `AMMCreate` transaction to create an AMM pool with assets A and B, the transaction will be successful.
+    - However, if the issuer wants to clawback assets from the AMM account, they must use the `AMMClawback` transaction instead of the regular `Clawback` transaction.  
+
+This change allows for the creation of AMM pools with clawback-enabled issuers while introducing a new transaction type (`AMMClawback`) for issuers to clawback assets from AMM accounts.
+
+
 #### 2.2.2. New transaction to claw back from AMM pools  
 This proposal introduces a new transaction type `AMMClawback` to allow asset issuers to claw back their assets from the AMM pool.  
 
