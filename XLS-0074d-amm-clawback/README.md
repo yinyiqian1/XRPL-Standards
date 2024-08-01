@@ -161,7 +161,7 @@ Issuers can only claw back issued tokens in the AMM pool only if the `lsfAllowTr
 
 By designating the AMM account and holder account, this transaction will:  
 - Claw back all LPTokens held by the specified holder account that are associated with the issuer from the specified AMM account.
-- Initiate a two-asset withdrawal from the AMM account, resulting in:
+- Initiate a two-asset withdrawal on the current proportion from the AMM account, resulting in:
   - The issuer's asset being returned to the issuer's account.
   - The non-issuer asset being transferred back to the holder's account
 
@@ -171,7 +171,7 @@ By designating the AMM account and holder account, this transaction will:
 |---------------------|:----------------:|:-------------:|:-----------------:|
 | `TransactionType`   |:heavy_check_mark:|`string`       |   `UINT16`        |  
 
-`TransactionType` specifies the new transaction type `AMMClawback`. The integer value is 31. The recommended name is `ttAMMClawback`.
+`TransactionType` specifies the new transaction type `AMMClawback`. The integer value is 31. The recommended name is `ttAMM_Clawback`.
 
 ---
 
@@ -213,6 +213,6 @@ By designating the AMM account and holder account, this transaction will:
 ```
 
 - Upon execution, this transaction enables the issuer `rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL` to claw back up all LPTokens from holder `rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B` associated with AMM account `rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR`.
-- The transaction will result in the withdrawal of two corresponding assets from the AMM account:  
+- The transaction will result in the withdrawal of two corresponding assets from the AMM account on the current proportion:  
   - The asset issued by the `Account` will be returned to the issuer.
   - The other asset will be transferred back to the holder's wallet.
