@@ -219,7 +219,7 @@ By designating the AMM account and holder account, this transaction will:
   "TransactionType": "AMMClawback",
   "Account": "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL",
   "Holder": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-  "AMMID": "DCF51389E32AB28ADB9A4F32DDDA81A3DB2B67FC7DAD9B03DE90A17C03FFE189",
+  "AMMAccount": "rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR",
   "Asset": {
     "currency": "FOO",
     "issuer": "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL"
@@ -229,7 +229,7 @@ By designating the AMM account and holder account, this transaction will:
 }
 ```
 
-- Upon execution, this transaction enables the issuer `rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL` to claw back all LPTokens from holder `rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B` associated with AMM ID `DCF51389E32AB28ADB9A4F32DDDA81A3DB2B67FC7DAD9B03DE90A17C03FFE189`. And one of the asset to withdraw from the AMM account is `FOO`.
+- Upon execution, this transaction enables the issuer `rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL` to claw back all LPTokens from holder `rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B` associated with AMM account `rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR`. And one of the asset to withdraw from the AMM account is `FOO`.
 - The transaction will result in the withdrawal of two corresponding assets from the AMM account on the current proportion:  
   - The asset `FOO` issued by the `Account` will be returned to the issuer.
   - The other asset will be transferred back to the holder's wallet.
