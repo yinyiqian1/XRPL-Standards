@@ -189,26 +189,13 @@ By designating the AMM account and holder account, this transaction will:
 `Holder` specifies the holder account of the LP Token to be clawed back.
 
 ---  
-| Field Name |     Required?      | JSON Type | Internal Type |
-| ---------- | :----------------: | :-------: | :-----------: |
-| `Asset` | :heavy_check_mark: | `object` |   `ISSUE`   |
-
-`Asset` field designates the specific asset owned by the issuer that will be withdrawn from the Automated Market Maker (AMM) account and subsequently returned to the issuer following the completion of the AMMClawback Transaction.  
-
-`Asset` has the following subfields:
-
-| Field name |     Required?      | Description                                                                                                     |
-| :--------: | :----------------: | :-------------------------------------------------------------------------------------------------------------- |
-|  `issuer`  | :heavy_check_mark: | specifies the unique XRPL account address of the entity issuing the currency                                    |
-| `currency` | :heavy_check_mark: | arbitrary code for currency to issue                                                                            |
-
----  
 
 | Field Name          | Required?        |  JSON Type          | Internal Type     |
 |---------------------|:----------------:|:-------------------:|:-----------------:|
 | `AMMAccount`        |:heavy_check_mark:|`string`             |   `ACCOUNT ID`    |  
 
 `AMMAccount` specifies the AMM account from which the transaction will withdraw assets after clawing back `Holder`'s LPtokens.
+
 ---  
 
 
@@ -220,16 +207,12 @@ By designating the AMM account and holder account, this transaction will:
   "Account": "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL",
   "Holder": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
   "AMMAccount": "rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR",
-  "Asset": {
-    "currency": "FOO",
-    "issuer": "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL"
-  },
   "Flags": 1,
   "Fee": 10
 }
 ```
 
-- Upon execution, this transaction enables the issuer `rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL` to claw back all LPTokens from holder `rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B` associated with AMM account `rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR`. And one of the asset to withdraw from the AMM account is `FOO`.
+- Upon execution, this transaction enables the issuer `rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL` to claw back all LPTokens from holder `rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B` associated with AMM account `rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR`.
 - The transaction will result in the withdrawal of two corresponding assets from the AMM account on the current proportion:  
-  - The asset `FOO` issued by the `Account` will be returned to the issuer.
+  - The asset issued by the `Account` will be returned to the issuer.
   - The other asset will be transferred back to the holder's wallet.
