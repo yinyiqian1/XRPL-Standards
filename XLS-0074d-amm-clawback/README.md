@@ -171,7 +171,7 @@ By designating the AMM account and holder account, this transaction will:
 |---------------------|:----------------:|:-------------:|:-----------------:|
 | `TransactionType`   |:heavy_check_mark:|`string`       |   `UINT16`        |  
 
-`TransactionType` specifies the new transaction type `AMMClawback`. The integer value is 31. The recommended name is `ttAMM_Clawback`.
+`TransactionType` specifies the new transaction type `AMMClawback`. The integer value is 31. The recommended name is `ttAMM_CLAWBACK`.
 
 ---
 
