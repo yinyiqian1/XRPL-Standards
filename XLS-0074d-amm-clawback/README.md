@@ -206,10 +206,9 @@ By designating the AMM account and holder account, this transaction will:
 
 | Field Name          | Required?        |  JSON Type          | Internal Type     |
 |---------------------|:----------------:|:-------------------:|:-----------------:|
-| `AMMID`             |:heavy_check_mark:|`string`             |   `UINT256`       |  
+| `AMMAccount`        |:heavy_check_mark:|`string`             |   `ACCOUNT ID`    |  
 
-`AMMID` specifies the AMM instance from which the transaction will withdraw assets after clawing back `Holder`'s LPtokens.
-
+`AMMAccount` specifies the AMM account from which the transaction will withdraw assets after clawing back `Holder`'s LPtokens.
 ---  
 
 
