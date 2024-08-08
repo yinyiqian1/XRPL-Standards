@@ -163,9 +163,9 @@ By designating the AMM account, holder account and amount, this transaction will
 - Claw back the specified amount of LPTokens held by the specified holder account that are associated with the issuer from the specified AMM account.
 - Initiate a two-asset withdrawal of the specified amount of LPTokens on the current proportion from the AMM account, resulting in:
   - The issuer's asset being returned to the issuer's account.
-  - The non-issuer asset being transferred back to the holder's account,
-  - If the issuer issues both assets, then both assets will be transferred to the issuer's account.
-  - If the requested amount of LPtokens exceeds the holder's available balance, then all the LPTokens will be clawed back.
+  - The non-issuer asset being transferred back to the holder's account.
+  - If the issuer issues both assets, both assets will be transferred to the issuer's account.
+  - If the requested amount of LPtokens exceeds the holder's available balance, all the LPTokens will be clawed back.
   - If amount is not given in the request, all the LPTokens will be clawed back.
 
 ##### 2.2.2.1. Fields for AMMClawback transaction  
@@ -208,9 +208,9 @@ By designating the AMM account, holder account and amount, this transaction will
 
 | Field name |     Required?      | Description                                                                                                     |
 | :--------: | :----------------: | :-------------------------------------------------------------------------------------------------------------- |
-|  `issuer`  | :heavy_check_mark: | specifies issuer of the LPToken, which is the AMMAccount                                                        |
+|  `issuer`  | :heavy_check_mark: | specifies the issuer of the LPToken, which is the AMMAccount                                                    |
 | `currency` | :heavy_check_mark: | LPToken hash                                                                                                    |
-|  `value`   | :heavy_check_mark: | specifies the maximum amount of LPTokens to be clawed back |
+|  `value`   | :heavy_check_mark: | specifies the maximum amount of LPTokens to be clawed back                                                      |
 
 ---
 
