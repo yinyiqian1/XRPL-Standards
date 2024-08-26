@@ -159,17 +159,19 @@ This proposal introduces a new transaction type `AMMClawback` to allow asset iss
 
 Issuers can only claw back issued tokens in the AMM pool only if the `lsfAllowTrustLineClawback` flag is enabled. Attempting to do so without this flag set will result in an error code `tecNO_PERMISSION`.  
 
-By designating the AMM account and holder account, this transaction will:  
-- Claw back all LPTokens held by the specified holder account that are associated with the issuer from the specified AMM account.
-- Initiate a two-asset withdrawal on the current proportion from the AMM account, resulting in:
+By designating the AMM account, holder account and amount, this transaction will:  
+- Claw back the specified amount of tokens held by the specified holder account that are in the specified AMM account.
+- Initiate a two-asset withdrawal of the specified amount of tokens on the current proportion from the AMM pool, resulting in:
   - The issuer's asset being returned to the issuer's account.
-  - The non-issuer asset being transferred back to the holder's account
+  - The paired asset being transferred back to the holder's account.
+  - If the requested amount of tokens exceeds the holder's available balance in the AMM pool, all the tokens owned by the specified holder will be clawed back.
+  - If amount is not given in the request, all the tokens owned by the specified holder will be clawed back from the pool.
 
 ##### 2.2.2.1. Fields for AMMClawback transaction  
 
 | Field Name          | Required?        |  JSON Type    | Internal Type     |
 |---------------------|:----------------:|:-------------:|:-----------------:|
-| `TransactionType`   |:heavy_check_mark:|`string`       |   `UINT16`        |  
+| `TransactionType`   |:heavy_check_mark:|`string`       |   `UINT16`        |
 
 `TransactionType` specifies the new transaction type `AMMClawback`. The integer value is 31. The recommended name is `ttAMM_CLAWBACK`.
 
@@ -177,16 +179,17 @@ By designating the AMM account and holder account, this transaction will:
 
 | Field Name          | Required?        |  JSON Type    | Internal Type     |
 |---------------------|:----------------:|:-------------:|:-----------------:|
-| `Account`           |:heavy_check_mark:|`string`       |   `ACCOUNT ID`    |  
+| `Account`           |:heavy_check_mark:|`string`       |   `ACCOUNT ID`    |
 
 `Account` designates the issuer of the asset being clawed back, and must match the account submitting the transaction.
 
----  
+---
+
 | Field Name          | Required?        |  JSON Type    | Internal Type     |
 |---------------------|:----------------:|:-------------:|:-----------------:|
 | `Holder`            |:heavy_check_mark:|`string`       |   `ACCOUNT ID`    |  
 
-`Holder` specifies the holder account of the LP Token to be clawed back.
+`Holder` specifies the holder account of the asset to be clawed back.
 
 ---  
 
@@ -194,10 +197,23 @@ By designating the AMM account and holder account, this transaction will:
 |---------------------|:----------------:|:-------------------:|:-----------------:|
 | `AMMAccount`        |:heavy_check_mark:|`string`             |   `ACCOUNT ID`    |  
 
-`AMMAccount` specifies the AMM account from which the transaction will withdraw assets after clawing back `Holder`'s LPtokens.
+`AMMAccount` specifies the AMM account from which the transaction will withdraw assets from. And the specified asset withdrawn from the pool will go back to the issuer.
 
----  
+---
 
+| Field Name        | Required? |      JSON Type       | Internal Type |
+| ----------------- | :-------: | :------------------: | :-----------: |
+| `Amount`          |           | `object`             |   `AMOUNT`    |
+
+`Amount` specifies the amount of token to be clawed back from the AMM account with the following subfields:
+
+| Field name |     Required?      | Description                                                                                        |
+| :--------: | :----------------: | :------------------------------------------------------------------------------------------------- |
+|  `issuer`  | :heavy_check_mark: | specifies the issuer of the token being clawed back, this should be the same as the Account field  |
+| `currency` | :heavy_check_mark: | specifies the currency to be clawed back                                                           |
+|  `value`   | :heavy_check_mark: | specifies the maximum amount of this currency to be clawed back                                    |
+
+---
 
 ##### 2.2.2.2. AMMClawback transaction example
 
@@ -207,12 +223,27 @@ By designating the AMM account and holder account, this transaction will:
   "Account": "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL",
   "Holder": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
   "AMMAccount": "rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR",
+  "Amount": {
+      "currency" : "FOO",
+      "issuer" : "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL",
+      "value" : "1000"
+  }
   "Flags": 1,
   "Fee": 10
 }
 ```
 
-- Upon execution, this transaction enables the issuer `rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL` to claw back all LPTokens from holder `rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B` associated with AMM account `rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR`.
+- Upon execution, this transaction enables the issuer `rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL` to claw back at most 1000 FOO from AMM account `rp2MaZMQDpgAHwWbADaQMrmf4AD5JsPQUR` owned by holder `rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59`.
 - The transaction will result in the withdrawal of two corresponding assets from the AMM account on the current proportion:  
-  - The asset issued by the `Account` will be returned to the issuer.
+  - The asset issued by the `Account` will be returned to the issuer `Account`. So 1000 FOO will be returned to the issuer `rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL`.
   - The other asset will be transferred back to the holder's wallet.
+  - If `Amount` is not given or its subfield `value` exceeds the holder's available balance, then all the holder's FOO will be clawed back from the AMM account.
+
+##### 2.2.2.3. Best practice if issuer issued both assets
+
+There is a very rare case that an issuer has issued both tokens in an AMM pool (e.g., FOO and BAR) and needs to claw back one token along with a proportional amount of the other. The following procedure should be followed:
+ - Freeze trustline for token FOO between issuer and holder.
+ - Freeze trustline for token BAR between issuer and holder.
+ - AMMClawback some amount of FOO.
+ - After some amount of FOO going back to the isser, and proportional amount of BAR going back to the holder's account, do a regular Clawback for the BAR token.
+ - Unfreeze trustlines if needed.
