@@ -243,7 +243,7 @@ It has the following subfields:
 ##### 2.2.2.2. Flags
 | Flag Name         |  Hex Value   | Description |
 | ----------------- | :----------: | :----------:|
-| `tfClawTwoAssets` | 0x00010000   | Indicates if the issuer wants to claw back both tokens in the pool. The two assets must both issued by the issuer|
+| `tfClawTwoAssets` | 0x00000001  | Indicates if the issuer wants to claw back both tokens in the pool. The two assets must both issued by the issuer|
 
 - It can be set only when the issuer issues both assets in the AMM pool.
 - If set, both the `Asset` token and the paired token will be clawed back.
